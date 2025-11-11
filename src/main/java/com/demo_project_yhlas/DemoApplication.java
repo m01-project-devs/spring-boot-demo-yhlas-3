@@ -1,4 +1,4 @@
-package com.demo_project_yhlas.demo;
+package com.demo_project_yhlas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
