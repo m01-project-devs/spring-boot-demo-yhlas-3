@@ -1,4 +1,4 @@
-package com.demo_project_yhlas.demo.controller;
+package com.demo_project_yhlas.controller;
 
 import com.demo_project_yhlas.entity.User;
 import com.demo_project_yhlas.repository.UserRepository;
