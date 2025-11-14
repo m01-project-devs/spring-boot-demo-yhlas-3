@@ -1,6 +1,6 @@
-package com.demo_project_yhlas.demo.controller;
+package com.demo_project_yhlas.controller;
 
-import com.demo_project_yhlas.demo.service.HelloService;
+import com.demo_project_yhlas.service.HelloService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

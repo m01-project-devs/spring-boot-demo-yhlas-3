@@ -1,4 +1,4 @@
-package com.demo_project_yhlas.demo.service;
+package com.demo_project_yhlas.service;
 
 import org.springframework.stereotype.Service;
 

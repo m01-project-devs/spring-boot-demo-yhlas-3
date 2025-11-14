@@ -1,6 +1,6 @@
 package com.demo_project_yhlas.demo;
 
-import com.demo_project_yhlas.demo.service.HelloService;
+import com.demo_project_yhlas.service.HelloService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
