@@ -1,11 +1,16 @@
 package com.demo_project_yhlas.controller;
 
+
 import com.demo_project_yhlas.entity.User;
-import com.demo_project_yhlas.repository.UserRepository;
+import com.demo_project_yhlas.service.UserService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -13,33 +18,59 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserTestController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
+
 
     public record CreateUserRequest(
-        @NotBlank @Email String email,
-        @NotBlank String password
+            @NotBlank @Email String email,
+            @NotBlank String password
     ) {}
 
-    @PostMapping("/users")
-    public User createUser(@RequestBody CreateUserRequest request) {
-        if (userRepository.existsByEmail(request.email())){
-            throw new IllegalArgumentException("Email already exists");
+    public record UpdatePasswordRequest(
+            @NotBlank String newPassword
+    ) {}
+
+
+    public record UserResponse(
+            Long id,
+            String email,
+            LocalDateTime createdAt
+    ) {
+        public static UserResponse from(User u) {
+            return new UserResponse(u.getId(), u.getEmail(), u.getCreatedAt());
         }
-        User user = User.builder()
-                .email(request.email())
-                .password(request.password())
-                .build();
-        return userRepository.save(user);
+    }
+
+    @PostMapping("/createUser")
+    public UserResponse createUser(@RequestBody @Valid CreateUserRequest request) {
+        User saved = userService.create(request.email(), request.password());
+        return UserResponse.from(saved);
     }
 
     @GetMapping("/users")
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return userService.getAll().stream()
+                .map(UserResponse::from)
+                .toList();
     }
 
     @GetMapping("/users/email/{email}")
-    public User getUserByEmail(@PathVariable String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public UserResponse getUserByEmail(@PathVariable String email) {
+        User user = userService.getByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+        return UserResponse.from(user);
+    }
+
+    @PatchMapping("/users/{id}/password")
+    public UserResponse updatePassword(@PathVariable Long id,
+                                       @RequestBody @Valid UpdatePasswordRequest request) {
+        User updated = userService.updatePassword(id, request.newPassword());
+        return UserResponse.from(updated);
+    }
+
+    @DeleteMapping("/users/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteById(id);
     }
 }
