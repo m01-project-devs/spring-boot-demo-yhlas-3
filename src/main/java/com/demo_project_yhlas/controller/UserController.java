@@ -14,11 +14,11 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id){
-        return userService.getById(id)
-                .map(UserResponse::from)
-                .map(ResponseEntity::ok)
+    @GetMapping()
+    public ResponseEntity<UserResponse> getUserById(@RequestParam String email){
+        return userService.getByEmail(email)
+                .map(user -> ResponseEntity.ok(UserResponse.from(user)))
                 .orElse(ResponseEntity.notFound().build());
+
     }
 }
