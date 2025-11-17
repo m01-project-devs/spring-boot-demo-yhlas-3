@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @ToString(exclude = "password")
 @EqualsAndHashCode(of = "id")
 
-public class User {
+public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
