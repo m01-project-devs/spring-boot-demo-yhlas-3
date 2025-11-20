@@ -2,12 +2,14 @@ package com.demo_project_yhlas.demo;
 
 import com.demo_project_yhlas.controller.UserController;
 import com.demo_project_yhlas.entity.User;
+import com.demo_project_yhlas.exception.GlobalExceptionHandler;
 import com.demo_project_yhlas.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@Import(GlobalExceptionHandler.class)
 public class UserControllerTest {
 
     @Autowired
@@ -168,6 +171,69 @@ public class UserControllerTest {
                         .param("email", "missing@gmail.com"))
                 .andExpect(status().isNotFound());
     }
+
+
+    @Test
+    void createUser_invalidEmail_returns400() throws Exception {
+        mvc.perform(post("/api/users")
+                        .content("""
+                                {
+                                  "email": "not-an-email",
+                                  "password": "123456"
+                                }
+                                """)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email", is("email must be valid")));
+    }
+
+    @Test
+    void createUser_blankPassword_returns400() throws Exception {
+        mvc.perform(post("/api/users")
+                        .content("""
+                                {
+                                  "email": "valid@example.com",
+                                  "password": "        "
+                                }
+                                """)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.password", is("password must not be blank")));
+    }
+
+    @Test
+    void createUser_shortPassword_returns400() throws Exception {
+        mvc.perform(post("/api/users")
+                        .content("""
+                                {
+                                  "email": "valid@example.com",
+                                  "password": "123"
+                                }
+                                """)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.password", is("password must be between 6 and 64 characters")));
+    }
+
+    @Test
+    void updatePassword_shortNewPassword_returns400() throws Exception {
+        Mockito.when(userService.getByEmail("example@gmail.com"))
+                .thenReturn(Optional.of(sampleUser()));
+
+        mvc.perform(put("/api/users/password")
+                        .param("email", "example@gmail.com")
+                        .content("""
+                            {
+                              "newPassword": "123"
+                            }
+                            """)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.newPassword",
+                        is("newPassword must be between 6 and 64 characters")));
+    }
+
+
 
 
 }
