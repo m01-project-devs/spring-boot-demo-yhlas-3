@@ -116,7 +116,7 @@ public class UserControllerTest {
         Mockito.when(userService.getByEmail("example@gmail.com"))
                 .thenReturn(Optional.of(existing));
 
-        Mockito.when(userService.updatePassword(eq(1L), eq("NewPassword321")))
+        Mockito.when(userService.updatePassword(eq("example@gmail.com"), eq("NewPassword321")))
                 .thenReturn(updated);
 
         mvc.perform(put("/api/users/password")
@@ -159,7 +159,7 @@ public class UserControllerTest {
                         .param("email", "example@gmail.com"))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(userService).deleteById(1L);
+        Mockito.verify(userService).deleteByEmail("example@gmail.com");
     }
 
     @Test

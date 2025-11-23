@@ -44,7 +44,7 @@ public class UserController {
                                                        @RequestBody @Valid UpdatePasswordRequest req){
         return userService.getByEmail(email)
                 .map(user -> {
-                    User updated = userService.updatePassword(user.getId(), req.newPassword());
+                    User updated = userService.updatePassword(email, req.newPassword());
                     return ResponseEntity.ok(UserResponse.from(updated));
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -54,7 +54,7 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@RequestParam String email) {
         return userService.getByEmail(email)
                 .map(user -> {
-                    userService.deleteById(user.getId());
+                    userService.deleteByEmail(email);
                     return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
                 })
                 .orElse(ResponseEntity.notFound().build());

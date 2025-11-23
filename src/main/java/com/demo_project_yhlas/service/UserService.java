@@ -12,7 +12,7 @@ public interface UserService {
     Optional<User> getByEmail(String email);
     List<User> getAll();
 
-    User updatePassword(Long id, String newPassword);
+    User updatePassword(String email, String newPassword);
 
-    void deleteById(Long id);
+    void deleteByEmail(String email);
 }

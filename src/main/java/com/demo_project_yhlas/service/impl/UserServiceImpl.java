@@ -1,6 +1,8 @@
 package com.demo_project_yhlas.service.impl;
 
 import com.demo_project_yhlas.entity.User;
+import com.demo_project_yhlas.exception.EmailAlreadyExistsException;
+import com.demo_project_yhlas.exception.UserNotFoundException;
 import com.demo_project_yhlas.repository.UserRepository;
 import com.demo_project_yhlas.service.UserService;
 import jakarta.transaction.Transactional;
@@ -20,7 +22,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User create(String email, String rawPassword){
         if (userRepository.existsByEmail(email)){
-            throw new IllegalArgumentException("Email already exists " + email);
+            throw new EmailAlreadyExistsException(email);
         }
         User user = User.builder()
                 .email(email)
@@ -45,16 +47,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updatePassword(Long id, String newPassword) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+    public User updatePassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
         user.setPassword(newPassword);
         return userRepository.save(user);
     }
 
     @Override
-    public void deleteById(Long id) {
-        userRepository.deleteById(id);
+    public void deleteByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(email));
+        userRepository.delete(user);
     }
 
 }
