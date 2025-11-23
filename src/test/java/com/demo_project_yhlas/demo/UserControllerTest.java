@@ -1,14 +1,14 @@
 package com.demo_project_yhlas.demo;
 
 import com.demo_project_yhlas.controller.UserController;
-import com.demo_project_yhlas.entity.User;
+import com.demo_project_yhlas.dto.response.UserResponse;
 import com.demo_project_yhlas.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 
@@ -25,28 +25,30 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     @Test
-    void getUserById_returnsUser() throws Exception{
-        User example = User.builder().id(1L).email("example@gmail.com").password("123Pass").build();
+    void getUserByEmail_returnsUser() throws Exception {
+        UserResponse example = new UserResponse("example@gmail.com");
 
-        Mockito.when(userService.getById(1L)).thenReturn(Optional.of(example));
+        Mockito.when(userService.getByEmail("example@gmail.com"))
+                .thenReturn(Optional.of(example));
 
-        mvc.perform(get("/api/users/1")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(1)))
+        mvc.perform(get("/api/users")
+                        .param("email", "example@gmail.com"))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email", is("example@gmail.com")));
     }
 
     @Test
-    void getUserById_notFound_returns404() throws Exception{
-        Mockito.when(userService.getById(99L)).thenReturn(Optional.empty());
+    void getUserByEmail_notFound_returns404() throws Exception {
+        Mockito.when(userService.getByEmail("missing@gmail.com"))
+                .thenReturn(Optional.empty());
 
-        mvc.perform(get("/api/users/99")).andExpect(status().isNotFound());
+        mvc.perform(get("/api/users")
+                        .param("email", "missing@gmail.com"))
+                .andExpect(status().isNotFound());
     }
-
-
-
 
 }

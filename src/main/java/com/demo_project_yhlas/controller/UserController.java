@@ -15,10 +15,9 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping()
-    public ResponseEntity<UserResponse> getUserById(@RequestParam String email){
+    public ResponseEntity<UserResponse> getUserByEmail(@RequestParam String email){
         return userService.getByEmail(email)
-                .map(user -> ResponseEntity.ok(UserResponse.from(user)))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
-
     }
 }
