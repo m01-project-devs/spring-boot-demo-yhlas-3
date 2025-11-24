@@ -1,6 +1,7 @@
 package com.demo_project_yhlas.demo;
 
 import com.demo_project_yhlas.entity.User;
+import com.demo_project_yhlas.exception.EmailAlreadyExistsException;
 import com.demo_project_yhlas.repository.UserRepository;
 import com.demo_project_yhlas.service.impl.UserServiceImpl;
 import com.demo_project_yhlas.service.UserService;
@@ -54,7 +55,7 @@ public class UserServiceTest {
     @DisplayName("create(): should fail on duplicate email")
     void create_duplicateEmail_shouldFail() {
         userService.create("dup@mail.com", "x");
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(EmailAlreadyExistsException.class,
                 () -> userService.create("dup@mail.com", "y"));
     }
 
