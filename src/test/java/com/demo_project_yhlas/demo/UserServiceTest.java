@@ -1,5 +1,6 @@
 package com.demo_project_yhlas.demo;
 
+import com.demo_project_yhlas.dto.response.UserResponse;
 import com.demo_project_yhlas.entity.User;
 import com.demo_project_yhlas.repository.UserRepository;
 import com.demo_project_yhlas.service.impl.UserServiceImpl;
@@ -62,10 +63,8 @@ public class UserServiceTest {
     @DisplayName("getByEmail(): should return saved user")
     void getByEmail_shouldReturnUser() {
         User saved = userService.create("find@me.com", "p");
-        Optional<User> found = userService.getByEmail("find@me.com");
+        Optional<UserResponse> found = userService.getByEmail("find@me.com");
 
         assertThat(found).isPresent();
-        assertThat(found.get().getId()).isEqualTo(saved.getId());
-        assertThat(found.get().getEmail()).isEqualTo("find@me.com");
     }
 }

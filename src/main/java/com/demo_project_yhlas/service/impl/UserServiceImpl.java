@@ -1,5 +1,6 @@
 package com.demo_project_yhlas.service.impl;
 
+import com.demo_project_yhlas.dto.response.UserResponse;
 import com.demo_project_yhlas.entity.User;
 import com.demo_project_yhlas.repository.UserRepository;
 import com.demo_project_yhlas.service.UserService;
@@ -35,8 +36,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> getByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Optional<UserResponse> getByEmail(String email) {
+        return userRepository.findByEmail(email).map(UserResponse::from);
     }
 
     @Override
@@ -53,11 +54,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteById(Long id) {
-       User user = userRepository.findById(id)
-               .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
-       userRepository.delete(user);
-
+    public void deleteByEmail(String email) {
+        userRepository.deleteByEmail(email);
     }
 
 }
