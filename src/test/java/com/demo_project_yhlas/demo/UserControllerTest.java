@@ -1,7 +1,7 @@
 package com.demo_project_yhlas.demo;
 
 import com.demo_project_yhlas.controller.UserController;
-import com.demo_project_yhlas.entity.User;
+import com.demo_project_yhlas.dto.response.UserResponse;
 import com.demo_project_yhlas.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
