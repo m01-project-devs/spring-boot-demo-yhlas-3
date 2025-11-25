@@ -14,7 +14,7 @@ public interface UserService {
     Optional<UserResponse> getByEmail(String email);
     List<User> getAll();
 
-    User updatePassword(Long id, String newPassword);
+    User updatePassword(String email, String newPassword);
 
     void deleteByEmail(String email);
 }

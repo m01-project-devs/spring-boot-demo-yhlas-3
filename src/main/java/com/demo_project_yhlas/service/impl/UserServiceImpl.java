@@ -46,16 +46,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updatePassword(Long id, String newPassword) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+    public User updatePassword(String email, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
         user.setPassword(newPassword);
         return userRepository.save(user);
     }
 
     @Override
     public void deleteByEmail(String email) {
-        userRepository.deleteByEmail(email);
+       User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+       userRepository.deleteByEmail(user.getEmail());
     }
 
 }
