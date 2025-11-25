@@ -113,7 +113,7 @@ public class UserControllerTest {
         Mockito.when(userService.getByEmail("example@gmail.com"))
                 .thenReturn(Optional.of(existing));
 
-        Mockito.when(userService.updatePassword(eq(1L), eq("NewPassword321")))
+        Mockito.when(userService.updatePassword(eq("example@gmail.com"), eq("NewPassword321")))
                 .thenReturn(updated);
 
         mvc.perform(put("/api/users/password")
@@ -147,27 +147,22 @@ public class UserControllerTest {
 
     @Test
     void deleteUser_returns204() throws Exception {
-        User existing = sampleUser();
-
-        Mockito.when(userService.getByEmail("example@gmail.com"))
-                .thenReturn(Optional.of(existing));
-
         mvc.perform(delete("/api/users")
                         .param("email", "example@gmail.com"))
                 .andExpect(status().isNoContent());
 
-        Mockito.verify(userService).deleteById(1L);
+        Mockito.verify(userService).deleteByEmail("example@gmail.com");
     }
+
 
     @Test
     void deleteUser_notFound_returns404() throws Exception {
-        Mockito.when(userService.getByEmail("missing@gmail.com"))
-                .thenReturn(Optional.empty());
+        Mockito.doThrow(new IllegalArgumentException("User not found"))
+                .when(userService).deleteByEmail("missing@gmail.com");
 
         mvc.perform(delete("/api/users")
                         .param("email", "missing@gmail.com"))
                 .andExpect(status().isNotFound());
     }
-
 
 }
